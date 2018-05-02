@@ -12,16 +12,6 @@ make sure you have nvidia drivers working on host machine
 
 should output [../edgard_tools_test_env/res/nvidia-smi_host-output.png](https://github.com/Dragdex/docker/blob/master/edgard_tools_test_env/res/nvidia-smi_host-output.png)
 
-./build.sh to build the docker image
-
-/run.sh to execute the docker image
-
-to check if the docker is working execute into the docker
-
-    nvidia-smi
-
-should output [../edgard_tools_test_env/res/nvidia-smi_docker-output.png](https://github.com/Dragdex/docker/blob/master/edgard_tools_test_env/res/nvidia-smi_docker-output.png)
-
 #######################################################################
 
 # Build your image
@@ -47,7 +37,21 @@ should output [../edgard_tools_test_env/res/nvidia-smi_docker-output.png](https:
 (depends on "cat docker_include/darknet-weights.docker >> Dockerfile")
 
     ./build.sh
-    
+
+#######################################################################
+
+# check the build
+
+- execute
+
+    ./run.sh --no-port
+
+- into the docker
+
+    nvidia-smi
+
+should output [../edgard_tools_test_env/res/nvidia-smi_docker-output.png](https://github.com/Dragdex/docker/blob/master/edgard_tools_test_env/res/nvidia-smi_docker-output.png)
+
 #######################################################################
 
 # run
@@ -63,6 +67,10 @@ should output [../edgard_tools_test_env/res/nvidia-smi_docker-output.png](https:
 - to execute a command direclty
 
     RUN_CMD="(ls -la ; date )" ./run.sh
+    
+- to open bash with nginx running in background    
+    
+    RUN_CMD="(/usr/local/nginx/sbin/nginx ; date & bach)" ./run.sh
 
 #######################################################################
  
@@ -80,16 +88,16 @@ Playback with:
 
 - into the docker
 
-gst-launch-1.0 -v playbin uri="rtmp://localhost/live/drone" live=1 is-live=true latency=50 sync=false
+    gst-launch-1.0 -v playbin uri="rtmp://localhost/live/drone" live=1 is-live=true latency=50 sync=false
 
 or opitionally with
 
-apt-get install ffmpeg
+    apt-get install ffmpeg
 
 ffplay -fflags nobuffer rtmp://127.0.0.1/live/drone -loglevel verbose
 
 - in host machine
 
-ffmpeg -f v4l2 -framerate 15 -video_size 800x600 -i /dev/video0 -video_size 800x600 -vcodec libx264 -maxrate 768k -bufsize 8080k -tune zerolatency -vf "format=yuv420p" -movflags +faststart -preset ultrafast -r 15 -vf scale=800:600 -f flv rtmp://localhost/live/drone
+    ffmpeg -f v4l2 -framerate 15 -video_size 800x600 -i /dev/video0 -video_size 800x600 -vcodec libx264 -maxrate 768k -bufsize 8080k -tune zerolatency -vf "format=yuv420p" -movflags +faststart -preset ultrafast -r 15 -vf scale=800:600 -f flv rtmp://localhost/live/drone
 
 #######################################################################
