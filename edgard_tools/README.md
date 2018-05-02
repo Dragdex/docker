@@ -23,6 +23,46 @@ to check if the docker is working execute into the docker
 should output [../edgard_tools_test_env/res/nvidia-smi_docker-output.png](https://github.com/Dragdex/docker/blob/master/edgard_tools_test_env/res/nvidia-smi_docker-output.png)
 
 #######################################################################
+
+# Build your image
+
+- Generate the base Dockerfile
+
+    ./bootstrap.sh
+
+- Optionally add ngix, extra image tools and yolo weights
+
+cat docker_include/nginx.docker >> Dockerfile
+cat docker_include/img-extra.docker >> Dockerfile
+cat docker_include/darknet-weights.docker >> Dockerfile
+
+- if you do not want to download yolo weights, build it with
+
+    ./build.sh --no-yolo-weights
+
+- or else build it with
+
+(depends on "cat docker_include/darknet-weights.docker >> Dockerfile")
+
+    ./build.sh
+    
+#######################################################################
+
+# run
+
+- to run bash prompt
+
+    ./run.sh
+
+- to run bash prompt without mapping ports
+
+    ./run.sh --no-port
+
+- to execute a command direclty
+
+    RUN_CMD="(ls -la ; date )" ./run.sh
+
+#######################################################################
  
 # check if darknet is working
 
