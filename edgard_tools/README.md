@@ -32,9 +32,11 @@ should output [../edgard_tools_test_env/res/nvidia-smi_docker-output.png](https:
 
 - Optionally add ngix, extra image tools and yolo weights
 
-cat docker_include/nginx.docker >> Dockerfile
-cat docker_include/img-extra.docker >> Dockerfile
-cat docker_include/darknet-weights.docker >> Dockerfile
+    cat docker_include/nginx.docker >> Dockerfile
+    
+    cat docker_include/img-extra.docker >> Dockerfile
+    
+    cat docker_include/darknet-weights.docker >> Dockerfile
 
 - if you do not want to download yolo weights, build it with
 
