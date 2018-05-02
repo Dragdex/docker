@@ -1,0 +1,20 @@
+
+### img-extra ###
+
+# darkflow
+RUN cd /opt && \
+    git clone https://github.com/thtrieu/darkflow.git && \
+    pip3 install numpy cython tensorflow opencv-python tensorflow-gpu && \
+    cd /opt/darkflow && \
+    pip3 install -e .
+
+# labeling
+
+RUN cd /opt && \
+    git clone https://github.com/tzutalin/labelImg.git && \
+    pip3 install lxml resources staty && \
+    apt-get install pyqt5-dev-tools -y --no-install-recommends
+
+###############################################################################################
+###############################################################################################
+###############################################################################################

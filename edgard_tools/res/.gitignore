@@ -1,0 +1,5 @@
+cudnn-9.0-linux-x64-v7.1.tgz
+nvidia-driver.run
+qt_installer.run
+*.weights
+

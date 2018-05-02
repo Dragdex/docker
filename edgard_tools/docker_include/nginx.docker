@@ -1,0 +1,19 @@
+
+#### nginx ###
+
+ADD res/nginx.conf /opt/nginx.conf 
+RUN cd /opt && \
+    curl -Lo nginx-1.14.0.tar.gz https://nginx.org/download/nginx-1.14.0.tar.gz && \
+    tar -xf nginx-1.14.0.tar.gz && \
+    curl -Lo nginx-rtmp-module.zip https://github.com/arut/nginx-rtmp-module/archive/master.zip && \
+    unzip nginx-rtmp-module.zip && \
+    cd nginx-1.14.0 && \
+    ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module-master && \
+    make && \
+    mkdir -p /usr/local/nginx/rtmp && \
+    make install && \
+    cat /opt/nginx.conf >> /usr/local/nginx/conf/nginx.conf
+
+##########################################################
+##########################################################
+##########################################################

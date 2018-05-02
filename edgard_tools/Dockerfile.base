@@ -1,0 +1,104 @@
+
+# License, please keep reference to this original docker and author then use it as you like 
+
+ARG repository="nvidia/cuda"
+
+FROM ${repository}:9.0-runtime-ubuntu17.04
+LABEL maintainer "Edgard Lima <edgard.lima@gmail.com>"
+# from https://gitlab.com/nvidia/cuda/blob/ubuntu17.04/9.0/devel/Dockerfile 
+
+ADD res/sources.list /etc/apt/sources.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        cuda-libraries-dev-$CUDA_PKG_VERSION \
+        cuda-nvml-dev-$CUDA_PKG_VERSION \
+        cuda-minimal-build-$CUDA_PKG_VERSION \
+        cuda-command-line-tools-$CUDA_PKG_VERSION && \
+    rm -rf /var/lib/apt/lists/*
+
+ARG QT_VERSION=5.10.1
+ARG QT_PATH=/opt/qt
+ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs:${LIBRARY_PATH}:/opt/qt/5.10.1/gcc_64/lib:/opt/darknet
+ENV PATH=/opt/qt/5.10.1/gcc_64/bin:$PATH
+
+WORKDIR /opt
+
+# install pkgs
+RUN apt-get update && \
+    apt-get install -y \
+        autoconf \
+        automake \
+        libtool \
+        build-essential \
+        git \
+        wget \
+        vim \
+        libgtk2.0-dev \
+        libssl-dev \
+        pkg-config \
+        g++ \
+        gcc \
+        vim \
+        cmake \
+        git \
+        python3-pip \
+        libboost-all-dev \
+        libpulse-dev \
+        curl \
+        unzip \
+        sudo \                                                                                                                                                                
+        pkg-config \
+        libnss3-tools \
+        locales \
+        libopencv-dev \
+		libgstreamer-plugins-base1.0-dev \
+		libgstreamer-plugins-good1.0-dev  \
+		libgstreamer1.0-dev \
+		libgstreamer-plugins-bad1.0-dev \
+        gstreamer1.0-plugins-base \
+        gstreamer1.0-plugins-bad \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-plugins-ugly \
+		gstreamer1.0-plugins-base-apps \
+        gstreamer1.0-libav \
+        gstreamer1.0-plugins-bad-faad \
+        gstreamer1.0-plugins-bad-videoparsers \
+        gstreamer1.0-rtsp gstreamer1.0-vaapi \
+        gstreamer1.0-nice \
+        gstreamer1.0-alsa \
+        libasound2-dev \
+        libxtst-dev
+
+# http://developer.download.nvidia.com/compute/redist/cudnn/v7.1.3/cudnn-9.0-linux-x64-v7.1.tgz
+ADD res/cudnn-9.0-linux-x64-v7.1.tgz /usr/local/
+RUN ldconfig
+
+# https://github.com/benlau/qtci/blob/master/bin/extract-qt-installer                                                                                                                                       
+# patched to increase welcome delay to 10s
+COPY res/extract-qt-installer.sh /tmp/qt/
+# Download & unpack Qt toolchains & clean
+ADD res/qt_installer.run /tmp/qt/qt_installer.run
+RUN export QCP=qt.qt5.$(echo "${QT_VERSION}" | tr -d .) && \
+    export QT_CI_PACKAGES=${QCP}.gcc_64,${QCP}.qtwebengine && \
+    /tmp/qt/extract-qt-installer.sh /tmp/qt/qt_installer.run "$QT_PATH" && \
+    find "${QT_PATH}" -mindepth 1 -maxdepth 1 ! -name "${QT_VERSION}" -exec echo 'Cleaning Qt SDK: {}' \; -exec rm -r '{}' \; && \
+    rm -f /tmp/qt/qt_installer.run
+
+RUN cd /opt && git clone https://github.com/pjreddie/darknet
+ADD res/darknet.patch /opt/darknet/darknet.patch
+RUN cd /opt/darknet && \
+    git checkout 80d9bec20f0a44ab07616215c6eadb2d633492fe && \
+    patch -p1 < darknet.patch && \
+    make
+
+# install opengl
+RUN dpkg --add-architecture i386
+ADD res/nvidia-driver.run /opt/nvidia-driver.run
+RUN apt-get install -y mesa-utils module-init-tools
+RUN chmod a+x /opt/nvidia-driver.run && \
+    /opt/nvidia-driver.run -s -a -N --ui=none --no-kernel-module --opengl-headers
+
+
+###############################################################################################
+###############################################################################################
+###############################################################################################

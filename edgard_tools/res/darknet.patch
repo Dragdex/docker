@@ -1,0 +1,56 @@
+diff --git a/Makefile b/Makefile
+index 1f31044..59d2874 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+-GPU=0
+-CUDNN=0
+-OPENCV=0
++GPU=1
++CUDNN=1
++OPENCV=1
+ OPENMP=0
+ DEBUG=0
+ 
+@@ -23,7 +23,7 @@ CC=gcc
+ NVCC=nvcc 
+ AR=ar
+ ARFLAGS=rcs
+-OPTS=-Ofast
++OPTS=-Ofast -g
+ LDFLAGS= -lm -pthread 
+ COMMON= -Iinclude/ -Isrc/
+ CFLAGS=-Wall -Wno-unused-result -Wno-unknown-pragmas -Wfatal-errors -fPIC
+@@ -33,7 +33,7 @@ CFLAGS+= -fopenmp
+ endif
+ 
+ ifeq ($(DEBUG), 1) 
+-OPTS=-O0 -g
++OPTS=-O0 -g3
+ endif
+ 
+ CFLAGS+=$(OPTS)
+diff --git a/include/darknet.h b/include/darknet.h
+index 9327ea8..4e51c2f 100644
+--- a/include/darknet.h
++++ b/include/darknet.h
+@@ -32,6 +32,10 @@ extern int gpu_index;
+     #endif
+ #endif
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ typedef struct{
+     int classes;
+     char **names;
+@@ -797,4 +801,8 @@ size_t rand_size_t();
+ float rand_normal();
+ float rand_uniform(float min, float max);
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #endif
