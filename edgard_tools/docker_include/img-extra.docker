@@ -12,7 +12,7 @@ RUN cd /opt && \
 
 RUN cd /opt && \
     git clone https://github.com/tzutalin/labelImg.git && \
-    pip3 install lxml resources staty && \
+    pip3 install lxml resources staty requests && \
     apt-get install pyqt5-dev-tools -y --no-install-recommends
 
 ###############################################################################################
